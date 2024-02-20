@@ -1,18 +1,25 @@
 
 There's a quirk with make:user if the database is initially sqlite and then is switched to postgres.
 
-So this demo uses postgres.  It easy to install with docker.
+So this demo uses postgres, you can install it with docker easily.  Whatever postgres you use, 
+make sure to add the appropriate DATABASE_URL to .env.local 
+
+```bash
+sudo docker run --rm --name pg-docker -e POSTGRES_PASSWORD=docker -d -p 5434:5432 -v $HOME/docker/volumes/postgres16:/var/lib/postgresql/data postgres:16
+```
+
+Install the app with a traditional email-based registration/login.
 
 ```bash
 symfony new --webapp oauth-demo && cd oauth-demo
+# change
+echo "DATABASE_URL=postgresql://postgres:docker@127.0.0.1:5432/auth-demo?serverVersion=16&charset=utf8" > .env.local
+
 bin/console doctrine:database:create
 composer config extra.symfony.allow-contrib true
 composer require knpuniversity/oauth2-client-bundle league/oauth2-github
 bin/console importmap:require bootstrap
 echo "import 'bootstrap/dist/css/bootstrap.min.css'" >> assets/app.js
-
-echo "DATABASE_URL=postgresql://postgres:docker@127.0.0.1:5432/auth-demo?serverVersion=16&charset=utf8" > .env.local
-bin/console d:d:create
 
 bin/console make:user --is-entity --identity-property-name=email --with-password User -n
 
@@ -86,12 +93,12 @@ EOF
 
 ```
 
-Of course, it will fail, as the app hasn't be configured yet. This step now requires 2FA, and is the slowest part
+Now configure the app on github.  This step now requires 2FA, and is the slowest part
 of this tutorial!  Once you're in, go to https://github.com/settings/developers and click on New OAuth App
 
 ![img.png](img.png)
 
-Fill out the form, paying careful attention to the redirect url https://oauth-demo.wip/connect/github/check
+Fill out the form, paying careful attention to the redirect url https://oauth-demo.wip/connect/github/check, which we'll define in the controller
 
 Generate the key:
 
