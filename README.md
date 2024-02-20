@@ -21,10 +21,13 @@ composer require knpuniversity/oauth2-client-bundle league/oauth2-github
 bin/console importmap:require bootstrap
 echo "import 'bootstrap/dist/css/bootstrap.min.css'" >> assets/app.js
 
+symfony console make:controller AppController
+sed -i "s|/app|/|" src/Controller/AppController.php 
+
 bin/console make:user --is-entity --identity-property-name=email --with-password User -n
 
 echo "github_id,string,80,yes," | sed "s/,/\n/g"  | bin/console make:entity User
-echo "yes,no,yes" | sed "s/,/\n/g"  | bin/console make:registration
+echo "yes,no,yes,14" | sed "s/,/\n/g"  | bin/console make:registration
 
 bin/console make:migration
 bin/console doctrine:migration:migrate -n
@@ -34,8 +37,6 @@ sed  -i "s|some_route|app_app|" src/Security/AppAuthenticator.php
 sed  -i "s|// return new|return new|" src/Security/AppAuthenticator.php
 sed  -i "s|throw new|//throw new|" src/Security/AppAuthenticator.php
 
-symfony console make:controller AppController
-sed -i "s|/app|/|" src/Controller/AppController.php 
 
 echo '' > templates/social_media_login.html.twig
 cat <<'EOF' > templates/app/index.html.twig
@@ -60,7 +61,9 @@ symfony open:local --path=/register
 
 ```
 
-Now that the traditional login/registration forms work, let's add github. 
+## Configure the Github OAuth
+
+Now that the traditional login/registration forms work, let's add the github config and env vars. 
 
 ```bash
 cat <<'EOF' > config/packages/knpu_oauth2_client.yaml
@@ -93,8 +96,10 @@ EOF
 
 ```
 
+## Generate the App and Keys on Github
+
 Now configure the app on github.  This step now requires 2FA, and is the slowest part
-of this tutorial!  Once you're in, go to https://github.com/settings/developers and click on New OAuth App
+of this tutorial!  Once you're in, go to https://github.com/settings/developers and click on *New OAuth App*
 
 ![img.png](img.png)
 
@@ -108,6 +113,8 @@ Open .env.local and set the key and client id
 
 Now create the controller that handles the workflow.  In this case, we're going to create a user 
 automatically and set the password to the github username. A real application would handle this better.
+
+## Create the Github Controller 
 
 ```bash
 cat << 'EOF' > src/Controller/GithubController.php
