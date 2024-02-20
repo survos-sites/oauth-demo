@@ -1,0 +1,9 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+Hello, 
+{{ app.user ? app.user : 'visitor }}
+
+<a href="{{ path('app_register') }}">Register</a>
+<a href="{{ path('app_login') }}">Login</a>
+<a href="{{ path('app_logout') }}">Logout</a>
+{% endblock %}
