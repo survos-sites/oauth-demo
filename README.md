@@ -13,7 +13,7 @@ Install the app with a traditional email-based registration/login.
 ```bash
 symfony new --webapp oauth-demo && cd oauth-demo
 # change
-echo "DATABASE_URL=postgresql://postgres:docker@127.0.0.1:5432/auth-demo?serverVersion=16&charset=utf8" > .env.local
+echo "DATABASE_URL=postgresql://postgres:docker@127.0.0.1:5434/auth-demo?serverVersion=16&charset=utf8" > .env.local
 
 bin/console doctrine:database:create
 composer config extra.symfony.allow-contrib true
