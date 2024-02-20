@@ -30,17 +30,20 @@ sed  -i "s|throw new|//throw new|" src/Security/AppAuthenticator.php
 symfony console make:controller AppController
 sed -i "s|/app|/|" src/Controller/AppController.php 
 
-touch templates/social_media_login.html.twig
+echo '' > templates/social_media_login.html.twig
 cat <<'EOF' > templates/app/index.html.twig
 {% extends 'base.html.twig' %}
 {% block body %}
-Hello, 
-{{ app.user ? app.user : 'visitor' }}
-
-<a href="{{ path('app_register') }}">Register</a>
-<a href="{{ path('app_login') }}">Login</a>
-<a href="{{ path('app_logout') }}">Logout</a>
-<a href="{{ path('app_app') }}">Home</a>
+    <div>
+        <a href="{{ path('app_app') }}">Home</a>
+    </div>
+    {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+        <a class="btn btn-primary" href="{{ path('app_logout') }}">Logout {{ app.user.email }} </a>
+    {% else %}
+        <a class="btn btn-primary" href="{{ path('app_register') }}">Register</a>
+        <a class="btn btn-secondary" href="{{ path('app_login') }}">Login</a>
+    {% endif %}
+    {{ include('social_media_login.html.twig') }}
 {% endblock %}
 EOF
 
@@ -71,22 +74,6 @@ knpu_oauth2_client:
             # whether to check OAuth2 "state": defaults to true
             # use_state: true
 EOF
-
-bin/console debug:route connect_github_check
-```
-
-Now get the all-important keys!  Go to https://github.com/settings/developers and click on New OAuth App
-
-![img.png](img.png)
-
-Fill out the form, paying careful attention to the redirect url https://oauth-demo.wip/connect/github/check
-
-Generate the key:
-
-![img_1.png](img_1.png)
-
-Add add it to .env.local
-```bash
 cat << 'EOF' >> .env
 OAUTH_GITHUB_CLIENT_ID=
 OAUTH_GITHUB_CLIENT_SECRET=
@@ -99,8 +86,21 @@ EOF
 
 ```
 
+Of course, it will fail, as the app hasn't be configured yet. This step now requires 2FA, and is the slowest part
+of this tutorial!  Once you're in, go to https://github.com/settings/developers and click on New OAuth App
+
+![img.png](img.png)
+
+Fill out the form, paying careful attention to the redirect url https://oauth-demo.wip/connect/github/check
+
+Generate the key:
+
+![img_1.png](img_1.png)
+
 Open .env.local and set the key and client id
 
+Now create the controller that handles the workflow.  In this case, we're going to create a user 
+automatically and set the password to the github username. A real application would handle this better.
 
 ```bash
 cat << 'EOF' > src/Controller/GithubController.php
