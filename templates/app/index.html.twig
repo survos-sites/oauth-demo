@@ -1,9 +1,12 @@
 {% extends 'base.html.twig' %}
 {% block body %}
-Hello, 
-{{ app.user ? app.user : 'visitor }}
-
-<a href="{{ path('app_register') }}">Register</a>
-<a href="{{ path('app_login') }}">Login</a>
-<a href="{{ path('app_logout') }}">Logout</a>
+    <div>
+        <a href="{{ path('app_app') }}">Home</a>
+    </div>
+    {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+        <a class="btn btn-primary" href="{{ path('app_logout') }}">Logout {{ app.user.email }} </a>
+    {% else %}
+        <a class="btn btn-primary" href="{{ path('app_register') }}">Register</a>
+        <a class="btn btn-secondary" href="{{ path('app_login') }}">Login</a>
+    {% endif %}
 {% endblock %}
