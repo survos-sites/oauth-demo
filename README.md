@@ -58,7 +58,6 @@ EOF
 symfony proxy:domain:attach oauth-demo
 symfony server:start -d
 symfony open:local --path=/register
-
 ```
 
 ## Configure the Github OAuth

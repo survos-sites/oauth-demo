@@ -37,6 +37,10 @@ class GithubController extends AbstractController
             ->redirect([
                  'email' // the scopes you want to access
             ]);
+        if (!str_starts_with($redirect->getTargetUrl(), 'https')) {
+//            $redirect->setTargetUrl()
+        }
+        assert(str_starts_with($redirect->getTargetUrl(), 'https'), "Missing https in " . $redirect->getTargetUrl());
         # hack for not returning https
         $redirect->setTargetUrl(str_replace('http%3A', 'https%3A', $redirect->getTargetUrl()));
 
