@@ -10,4 +10,30 @@
         <a class="btn btn-secondary" href="{{ path('app_login') }}">Login</a>
     {% endif %}
     {{ include('social_media_login.html.twig') }}
+
+<hr />
+    <h3>Google Debug Info</h3>
+    After authenticating, Google will redirect you to
+    <div>
+        <code>{{ query.redirect_uri }}</code>
+    </div>
+
+    Configure <b>Authorized redirect URIs</b>
+
+    {% set googleProjectUrl = 'https://console.cloud.google.com/apis/credentials/oauthclient/%s?project=%s'|
+        format(clientId, projectId) %}
+    <a href="{{ googleProjectUrl }}" target="_blank" class="btn btn-warning">
+        Google Project {{ projectId }}
+    </a>
+
+    https://console.cloud.google.com/apis/credentials/oauthclient/
+    423966986543-s24uli6j9cujm7feu4tb0t36cr1t573e.apps.googleusercontent.com?
+    project=oauthdemo-415600
+
+    <pre>
+        {{ targetInfo|json_encode(constant('JSON_UNESCAPED_SLASHES')+constant('JSON_PRETTY_PRINT')) }}
+        {{ query|json_encode(constant('JSON_UNESCAPED_SLASHES')+constant('JSON_PRETTY_PRINT')) }}
+    </pre>
+{#    {{ dump(targetInfo) }}#}
+{#    {{ dump(query) }}#}
 {% endblock %}

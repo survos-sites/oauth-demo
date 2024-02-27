@@ -7,7 +7,10 @@ use App\Security\AppAuthenticator;
 use Doctrine\ORM\EntityManagerInterface;
 use KnpU\OAuth2ClientBundle\Client\ClientRegistry;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
+use League\OAuth2\Client\Provider\Google;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -21,7 +24,8 @@ class GoogleController extends AbstractController
         private EntityManagerInterface $entityManager,
         private UserAuthenticatorInterface $userAuthenticator,
         private AppAuthenticator $authenticator,
-        private UserPasswordHasherInterface $userPasswordHasher
+        private UserPasswordHasherInterface $userPasswordHasher,
+        private ClientRegistry $clientRegistry
     )
     {
     }
@@ -29,13 +33,19 @@ class GoogleController extends AbstractController
      * Link to this controller to start the "connect" process
      */
     #[Route('/connect/google', name: 'connect_google_start')]
-    public function connect(ClientRegistry $clientRegistry): Response
+    public function connect(): Response
+    {
+        return $this->getRedirect();
+    }
+
+    public function getRedirect(): RedirectResponse
     {
         // will redirect to Google!
-        $redirect = $clientRegistry
+        $redirect = $this->clientRegistry
             ->getClient('google') // key used in config/packages/knpu_oauth2_client.yaml
             ->redirect([
-                 'email' // the scopes you want to access
+                'profile',
+                'email' // the scopes you want to access
             ]);
         if (!str_starts_with($redirect->getTargetUrl(), 'https')) {
 //            $redirect->setTargetUrl()
@@ -43,8 +53,8 @@ class GoogleController extends AbstractController
         assert(str_starts_with($redirect->getTargetUrl(), 'https'), "Missing https in " . $redirect->getTargetUrl());
         # hack for not returning https
         $redirect->setTargetUrl(str_replace('http%3A', 'https%3A', $redirect->getTargetUrl()));
-
         return $redirect;
+
     }
 
     /**
@@ -61,7 +71,7 @@ class GoogleController extends AbstractController
 
         try {
             // the exact class depends on which provider you're using
-            /** @var \League\OAuth2\Client\Provider\GoogleResourceOwner $user */
+            /** @var Google $user */
             $accessToken = $client->getAccessToken();
             $oAuthUser = $client->fetchUserFromToken($accessToken);
             $email = $oAuthUser->getEmail();
@@ -87,6 +97,7 @@ class GoogleController extends AbstractController
         } catch (IdentityProviderException $e) {
             // something went wrong!
             // probably you should return the reason to the user
+            return new JsonResponse($e);
             dd($e->getMessage());
         }
 
