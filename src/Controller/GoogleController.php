@@ -43,16 +43,13 @@ class GoogleController extends AbstractController
         // will redirect to Google!
         $redirect = $this->clientRegistry
             ->getClient('google') // key used in config/packages/knpu_oauth2_client.yaml
-            ->redirect([
-                'profile',
-                'email'
-            ]);
-        if (!str_starts_with($redirect->getTargetUrl(), 'https')) {
-//            $redirect->setTargetUrl()
-        }
-        assert(str_starts_with($redirect->getTargetUrl(), 'https'), "Missing https in " . $redirect->getTargetUrl());
-        # hack for not returning https
-        $redirect->setTargetUrl(str_replace('http%3A', 'https%3A', $redirect->getTargetUrl()));
+            ->redirect([]);
+//        if (!str_starts_with($redirect->getTargetUrl(), 'https')) {
+////            $redirect->setTargetUrl()
+//        }
+//        assert(str_starts_with($redirect->getTargetUrl(), 'https'), "Missing https in " . $redirect->getTargetUrl());
+//        # hack for not returning https
+//        $redirect->setTargetUrl(str_replace('http%3A', 'https%3A', $redirect->getTargetUrl()));
         return $redirect;
 
     }
@@ -65,6 +62,8 @@ class GoogleController extends AbstractController
     #[Route('/connect/google/check', name: 'connect_google_check')]
     public function connectCheckAction(Request $request, ClientRegistry $clientRegistry): Response
     {
+
+        $service =  $request->attributes->all()['service'];
 
         /** @var \KnpU\OAuth2ClientBundle\Client\Provider\GoogleClient $client */
         $client = $clientRegistry->getClient('google');
@@ -80,6 +79,7 @@ class GoogleController extends AbstractController
             // something went wrong!
             // probably you should return the reason to the user
             return new JsonResponse([
+                'service' => $service,
                 'accessToken' => $accessToken??null,
                 'message' => $e->getMessage(),
                     'queryParams' => $request->query->all(),
