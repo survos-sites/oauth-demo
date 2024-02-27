@@ -1,7 +1,6 @@
 {
     "type": "project",
     "license": "proprietary",
-    "minimum-stability": "stable",
     "prefer-stable": true,
     "require": {
         "php": ">=8.2",
@@ -10,8 +9,7 @@
         "doctrine/dbal": "^3",
         "doctrine/doctrine-bundle": "^2.11",
         "doctrine/doctrine-migrations-bundle": "^3.3",
-        "doctrine/orm": "^3.0",
-        "knpuniversity/oauth2-client-bundle": "dev-tac",
+        "doctrine/orm": "^2.18 || ^3.0",
         "league/oauth2-github": "^3.1",
         "league/oauth2-google": "^4.0",
         "phpdocumentor/reflection-docblock": "^5.3",
@@ -46,6 +44,7 @@
         "symfony/validator": "^6.4 || ^7.0",
         "symfony/web-link": "^6.4 || ^7.0",
         "symfony/yaml": "^6.4 || ^7.0",
+        "tacman/oauth2-client-bundle": "*",
         "twig/extra-bundle": "^2.12|^3.0",
         "twig/twig": "^2.12|^3.0"
     },
@@ -96,7 +95,7 @@
     "extra": {
         "symfony": {
             "allow-contrib": "true",
-            "require": "^6.4"
+            "require": "^7.0"
         }
     },
     "require-dev": {
