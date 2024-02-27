@@ -76,30 +76,35 @@ class GoogleController extends AbstractController
             $oAuthUser = $client->fetchUserFromToken($accessToken);
             $email = $oAuthUser->getEmail();
 
-            if (!$user = $this->entityManager->getRepository(User::class)->findOneBy(['email' => $email])) {
-                $user = (new User())
-                    ->setEmail($email);
-                $this->entityManager->persist($user);
-            }
-            // better is to redirect to a page requiring the user to set/change their password, or allow null passwords.
-            $plaintextPassword = $oAuthUser->getId();
-            $hashedPassword = $this->userPasswordHasher->hashPassword(
-                $user,
-                $plaintextPassword
-            );
-            $user
-                ->setPassword($hashedPassword)
-                ->setGoogleId($accessToken);
-            $this->entityManager->flush();
-
-            $this->userAuthenticator->authenticateUser($user, $this->authenticator, $request);
-
         } catch (IdentityProviderException $e) {
             // something went wrong!
             // probably you should return the reason to the user
-            return new JsonResponse($e);
+            return new JsonResponse([
+                'accessToken' => $accessToken??null,
+                'message' => $e->getMessage()
+                ]
+            );
             dd($e->getMessage());
         }
+
+        if (!$user = $this->entityManager->getRepository(User::class)->findOneBy(['email' => $email])) {
+            $user = (new User())
+                ->setEmail($email);
+            $this->entityManager->persist($user);
+        }
+        // better is to redirect to a page requiring the user to set/change their password, or allow null passwords.
+        $plaintextPassword = $oAuthUser->getId();
+        $hashedPassword = $this->userPasswordHasher->hashPassword(
+            $user,
+            $plaintextPassword
+        );
+        $user
+            ->setPassword($hashedPassword)
+            ->setGoogleId($accessToken);
+        $this->entityManager->flush();
+
+        $this->userAuthenticator->authenticateUser($user, $this->authenticator, $request);
+
 
         return $this->redirectToRoute('app_app');
     }
