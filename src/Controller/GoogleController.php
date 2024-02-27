@@ -44,12 +44,8 @@ class GoogleController extends AbstractController
         $redirect = $this->clientRegistry
             ->getClient('google') // key used in config/packages/knpu_oauth2_client.yaml
             ->redirect([]);
-//        if (!str_starts_with($redirect->getTargetUrl(), 'https')) {
-////            $redirect->setTargetUrl()
-//        }
-//        assert(str_starts_with($redirect->getTargetUrl(), 'https'), "Missing https in " . $redirect->getTargetUrl());
-//        # hack for not returning https
-//        $redirect->setTargetUrl(str_replace('http%3A', 'https%3A', $redirect->getTargetUrl()));
+        $targetUrl = $redirect->getTargetUrl();
+        $redirect->setTargetUrl(str_replace('http%3A', 'https%3A', $targetUrl));
         return $redirect;
 
     }
