@@ -17,7 +17,9 @@ echo "DATABASE_URL=postgresql://postgres:docker@127.0.0.1:5434/auth-demo?serverV
 
 bin/console doctrine:database:create
 composer config extra.symfony.allow-contrib true
-composer require knpuniversity/oauth2-client-bundle league/oauth2-github
+composer config repositories.tac_oauth '{"type": "vcs", "url": "git@github.com:tacman/oauth2-client-bundle.git"}'
+
+composer require knpuniversity/oauth2-client-bundle:dev-tac league/oauth2-github
 bin/console importmap:require bootstrap
 echo "import 'bootstrap/dist/css/bootstrap.min.css'" >> assets/app.js
 

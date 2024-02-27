@@ -12,7 +12,8 @@ class AppController extends AbstractController
     #[Route('/', name: 'app_app')]
     public function index(GoogleController $googleController, ClientRegistry $clientRegistry): Response
     {
-        $redirect = $googleController->getRedirect();
+
+        $redirect = $googleController->getRedirect('google');
 
         parse_str($queryString = parse_url($targetUrl = $redirect->getTargetUrl(), PHP_URL_QUERY), $array);
 //        dd($array, $queryString, $targetUrl);

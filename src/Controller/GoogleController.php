@@ -16,6 +16,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Http\Authentication\UserAuthenticatorInterface;
 
 class GoogleController extends AbstractController
@@ -32,7 +33,8 @@ class GoogleController extends AbstractController
         private UserAuthenticatorInterface $userAuthenticator,
         private AppAuthenticator $authenticator,
         private UserPasswordHasherInterface $userPasswordHasher,
-        private ClientRegistry $clientRegistry
+        private ClientRegistry $clientRegistry,
+        private UrlGeneratorInterface $generator,
     )
     {
     }
@@ -40,31 +42,48 @@ class GoogleController extends AbstractController
      * Link to this controller to start the "connect" process
      */
     #[Route(path: '/oauth/connect/service/{service}', name: 'oauth_login',  methods:['GET'])]
-    public function connect( string $service, ClientRegistry $clientRegistry ): RedirectResponse
+    public function connect( string $service,  ClientRegistry $clientRegistry ): RedirectResponse
     {
         if ( !in_array($service, array_keys(self::SCOPES), TRUE) )
         {
             throw $this->createNotFoundException() ;
         }
 
-        // $clientRegistry = $this->get('knpu.oauth2.registry');
-        $redirect = $clientRegistry
-            ->getClient($service) // the name use in config/packages/knpu_oauth2_client.yaml
-            ->redirect( self::SCOPES[$service], [] ) ;  // 'public_profile', 'email' ,  the scopes you want to access
-        $targetUrl = $redirect->getTargetUrl();
-        $redirect->setTargetUrl(str_replace('http%3A', 'https%3A', $targetUrl));
+        $redirect = $this->getRedirect($service);
         return $redirect;
     }
 
-    public function getRedirect(): RedirectResponse
+    public function getRedirect(string $service): RedirectResponse
     {
-        // will redirect to Google!
-        $redirect = $this->clientRegistry
-            ->getClient('google') // key used in config/packages/knpu_oauth2_client.yaml
-            ->redirect([]);
-        $targetUrl = $redirect->getTargetUrl();
-        $redirect->setTargetUrl(str_replace('http%3A', 'https%3A', $targetUrl));
+        // $clientRegistry = $this->get('knpu.oauth2.registry');
+        $client = $this->clientRegistry
+            ->getClient($service); // the name use in config/packages/knpu_oauth2_client.yaml
+        $redirect = $client
+            ->redirect( self::SCOPES[$service], [
+            ] ) ;  // 'public_profile', 'email' ,  the scopes you want to access
+
         return $redirect;
+        dd($client->getOAuth2Provider());
+
+//        dd($client->getOAuth2Provider());
+        $redirectUrl = $this->generateUrl('auth_oauth_check', ['service' => $service], UrlGeneratorInterface::ABSOLUTE_URL);
+        $redirectUrl = str_replace('http://', 'https://', $redirectUrl);
+        $redirect = $client
+            ->redirect( self::SCOPES[$service], [
+                'redirect_uri' => $redirectUrl
+            ] ) ;  // 'public_profile', 'email' ,  the scopes you want to access
+        $targetUrl = $redirect->getTargetUrl();
+
+        parse_str($queryString = parse_url($targetUrl, PHP_URL_QUERY), $queryParams);
+        $redirectUrl = $queryParams['redirect_uri'];
+//        dd($redirectUrl);
+        assert(str_starts_with($redirectUrl, 'https'), "https for $redirectUrl");
+//        dd($queryParams, $queryString, $targetUrl, $redirectUrl);
+        assert(str_starts_with($targetUrl, 'https'), "https for $targetUrl");
+//        $redirect->setTargetUrl(str_replace('http%3A', 'https%3A', $targetUrl));
+
+            return $redirect;
+
 
     }
 
@@ -78,6 +97,7 @@ class GoogleController extends AbstractController
     {
         /** @var GoogleClient $client */
         $client = $clientRegistry->getClient($service);
+//        dd($client, $client->getOAuth2Provider());
 
             // the exact class depends on which provider you're using
             /** @var Google $user */
