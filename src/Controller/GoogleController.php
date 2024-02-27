@@ -45,7 +45,7 @@ class GoogleController extends AbstractController
             ->getClient('google') // key used in config/packages/knpu_oauth2_client.yaml
             ->redirect([
                 'profile',
-                'email' // the scopes you want to access
+                'email'
             ]);
         if (!str_starts_with($redirect->getTargetUrl(), 'https')) {
 //            $redirect->setTargetUrl()
@@ -81,7 +81,8 @@ class GoogleController extends AbstractController
             // probably you should return the reason to the user
             return new JsonResponse([
                 'accessToken' => $accessToken??null,
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
+                    'queryParams' => $request->query->all(),
                 ]
             );
             dd($e->getMessage());
