@@ -1,2 +1,5 @@
-<a class="btn btn-danger" href="{{ path('connect_github_start') }}">Login with Github</a>
-<a class="btn btn-warning" href="{{ path('connect_google_start') }}">Login with Google</a>
+{% for service in ['google','github'] %}
+    <a class="btn btn-danger" href="{{ path('oauth_login', {service: service}) }}">Login with {{ service }}</a>
+
+{% endfor %}
+

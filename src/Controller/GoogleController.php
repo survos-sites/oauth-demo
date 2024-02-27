@@ -6,6 +6,7 @@ use App\Entity\User;
 use App\Security\AppAuthenticator;
 use Doctrine\ORM\EntityManagerInterface;
 use KnpU\OAuth2ClientBundle\Client\ClientRegistry;
+use KnpU\OAuth2ClientBundle\Client\Provider\GoogleClient;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use League\OAuth2\Client\Provider\Google;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -20,6 +21,12 @@ use Symfony\Component\Security\Http\Authentication\UserAuthenticatorInterface;
 class GoogleController extends AbstractController
 {
 
+    public const SCOPES = [
+        'google' => [],
+        'github' => ['user','user:email','repo'],
+        'facebook' => ['public_profile', 'email'],
+    ];
+
     public function __construct(
         private EntityManagerInterface $entityManager,
         private UserAuthenticatorInterface $userAuthenticator,
@@ -32,10 +39,21 @@ class GoogleController extends AbstractController
     /**
      * Link to this controller to start the "connect" process
      */
-    #[Route('/connect/google', name: 'connect_google_start')]
-    public function connect(): Response
+    #[Route(path: '/oauth/connect/service/{service}', name: 'oauth_login',  methods:['GET'])]
+    public function connect( string $service, ClientRegistry $clientRegistry ): RedirectResponse
     {
-        return $this->getRedirect();
+        if ( !in_array($service, array_keys(self::SCOPES), TRUE) )
+        {
+            throw $this->createNotFoundException() ;
+        }
+
+        // $clientRegistry = $this->get('knpu.oauth2.registry');
+        $redirect = $clientRegistry
+            ->getClient($service) // the name use in config/packages/knpu_oauth2_client.yaml
+            ->redirect( self::SCOPES[$service], [] ) ;  // 'public_profile', 'email' ,  the scopes you want to access
+        $targetUrl = $redirect->getTargetUrl();
+        $redirect->setTargetUrl(str_replace('http%3A', 'https%3A', $targetUrl));
+        return $redirect;
     }
 
     public function getRedirect(): RedirectResponse
@@ -55,21 +73,18 @@ class GoogleController extends AbstractController
      * because this is the "redirect_route" you configured
      * in config/packages/knpu_oauth2_client.yaml and in the Google App page
      */
-    #[Route('/connect/google/check', name: 'connect_google_check')]
-    public function connectCheckAction(Request $request, ClientRegistry $clientRegistry): Response
+    #[Route('/oauth/check/{service}', name: 'auth_oauth_check',  methods:['GET','POST'])]
+    public function connectCheckAction(string $service, Request $request, ClientRegistry $clientRegistry): Response
     {
+        /** @var GoogleClient $client */
+        $client = $clientRegistry->getClient($service);
 
-        $service =  $request->attributes->all()['service'];
-
-        /** @var \KnpU\OAuth2ClientBundle\Client\Provider\GoogleClient $client */
-        $client = $clientRegistry->getClient('google');
-
-        try {
             // the exact class depends on which provider you're using
             /** @var Google $user */
             $accessToken = $client->getAccessToken();
             $oAuthUser = $client->fetchUserFromToken($accessToken);
             $email = $oAuthUser->getEmail();
+        try {
 
         } catch (IdentityProviderException $e) {
             // something went wrong!
