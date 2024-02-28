@@ -11,11 +11,12 @@ use Symfony\Component\Routing\Attribute\Route;
 class AppController extends AbstractController
 {
     #[Route('/', name: 'app_app')]
-    public function index(Request $request, GoogleController $googleController, ClientRegistry $clientRegistry): Response
+    public function index(Request $request, OAuthController $authController, ClientRegistry $clientRegistry): Response
     {
 
         foreach (['google', 'github'] as $service) {
-            $redirect = $googleController->getRedirect($service);
+            // get the redirect from the service and parse it out.
+            $redirect = $authController->getRedirect($service);
             parse_str($queryString = parse_url($targetUrl = $redirect->getTargetUrl(), PHP_URL_QUERY), $array);
             $redirectUri = $array['redirect_uri'];
             $productionRedirctUri = str_replace($request->getSchemeAndHttpHost(),

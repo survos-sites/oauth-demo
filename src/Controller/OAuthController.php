@@ -19,7 +19,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Http\Authentication\UserAuthenticatorInterface;
 
-class GoogleController extends AbstractController
+class OAuthController extends AbstractController
 {
 
     public const SCOPES = [
