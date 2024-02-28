@@ -24,7 +24,7 @@ class GoogleController extends AbstractController
 
     public const SCOPES = [
         'google' => [],
-        'github' => ['user','user:email','repo'],
+        'github' => ['user','user:email'],
         'facebook' => ['public_profile', 'email'],
     ];
 
@@ -131,8 +131,11 @@ class GoogleController extends AbstractController
             $plaintextPassword
         );
         $user
-            ->setPassword($hashedPassword)
-            ->setGoogleId($accessToken);
+            ->setPassword($hashedPassword);
+        $user = match($service) {
+            'google' => $user->setGoogleId($accessToken),
+            'github' => $user->setGithubId($accessToken)
+        };
         $this->entityManager->flush();
 
         $this->userAuthenticator->authenticateUser($user, $this->authenticator, $request);

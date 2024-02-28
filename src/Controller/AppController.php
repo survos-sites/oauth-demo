@@ -13,17 +13,24 @@ class AppController extends AbstractController
     public function index(GoogleController $googleController, ClientRegistry $clientRegistry): Response
     {
 
-        $redirect = $googleController->getRedirect('google');
-
-        parse_str($queryString = parse_url($targetUrl = $redirect->getTargetUrl(), PHP_URL_QUERY), $array);
-//        dd($array, $queryString, $targetUrl);
+        foreach (['google', 'github'] as $service) {
+            $redirect = $googleController->getRedirect($service);
+            parse_str($queryString = parse_url($targetUrl = $redirect->getTargetUrl(), PHP_URL_QUERY), $array);
+            $services[$service] = [
+                'targetUrl' => $redirect->getTargetUrl(),
+                'targetInfo' => parse_url($redirect->getTargetUrl()),
+                'query' => $array,
+                'clientId' => $array['client_id'],
+                'projectId' => $this->getParameter($service . '_project_id'),
+                'service_apps_url' => match ($service) {
+                    'github' => 'https://github.com/settings/developers',
+                    'google' => 'https://console.cloud.google.com/apis/credentials'
+                }
+            ];
+        }
         return $this->render('app/index.html.twig', [
-            'targetUrl' => $redirect->getTargetUrl(),
-            'targetInfo' => parse_url($redirect->getTargetUrl()),
-            'query' => $array,
-            'clientId' => $array['client_id'],
+            'services' => $services,
             'projectId' => $this->getParameter('google_project_id'),
-            'controller_name' => 'AppController',
         ]);
     }
 }

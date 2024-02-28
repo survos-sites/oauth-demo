@@ -44,7 +44,7 @@
         "symfony/validator": "^6.4 || ^7.0",
         "symfony/web-link": "^6.4 || ^7.0",
         "symfony/yaml": "^6.4 || ^7.0",
-        "tacman/oauth2-client-bundle": "*",
+        "knpuniversity/oauth2-client-bundle": "^v2.18.1",
         "twig/extra-bundle": "^2.12|^3.0",
         "twig/twig": "^2.12|^3.0"
     },

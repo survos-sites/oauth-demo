@@ -1,3 +1,20 @@
+# OAuth2 Client Bundle Demo
+
+While installing this app is trivial, the setup requires configuration OAuth keys.  Since Google requires a publicly visible URL for the redirect, we'll use ngrok, but any tunnel should work (pinggy.io or localtunnel, for example).
+
+```bash
+git clone survos-sites/oauth-demo && cd oauth-demo
+composer install
+```
+
+Setup your database and set DATABASE_URL in .env.local, if you use postgres you can migrate, otherwise run doctrine:schema:update --force --complete
+
+
+```php
+symfony server:start -d
+ngrok http http://localhost:8000
+
+```
 
 There's a quirk with make:user if the database is initially sqlite and then is switched to postgres.
 

@@ -1,39 +1,59 @@
 {% extends 'base.html.twig' %}
 {% block body %}
+    {% set user = app.user %}
     <div>
         <a href="{{ path('app_app') }}">Home</a>
     </div>
-    {% if is_granted('IS_AUTHENTICATED_FULLY') %}
-        <a class="btn btn-primary" href="{{ path('app_logout') }}">Logout {{ app.user.email }} </a>
-    {% else %}
-        <a class="btn btn-primary" href="{{ path('app_register') }}">Register</a>
-        <a class="btn btn-secondary" href="{{ path('app_login') }}">Login</a>
-    {% endif %}
-    {{ include('social_media_login.html.twig') }}
-
-<hr />
-    <h3>Google Debug Info</h3>
-    After authenticating, Google will redirect you to
     <div>
-        <code>{{ query.redirect_uri }}</code>
+
+    {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+        <h3>You are logged in as {{ app.user.email }}</h3>
+        <a class="btn btn-primary" href="{{ path('app_logout') }}">Logout</a>
+    {% else %}
+        <h3>You are not logged in.</h3>
+{#        <a class="btn btn-primary" href="{{ path('app_register') }}">Register</a>#}
+        <a class="btn btn-secondary" href="{{ path('app_login') }}">Login With Email</a>
+        {{ include('social_media_login.html.twig') }}
+    {% endif %}
     </div>
 
-    Configure <b>Authorized redirect URIs</b>
-
-    {% set googleProjectUrl = 'https://console.cloud.google.com/apis/credentials/oauthclient/%s?project=%s'|
-        format(clientId, projectId) %}
-    <a href="{{ googleProjectUrl }}" target="_blank" class="btn btn-warning">
-        Google Project {{ projectId }}
-    </a>
-
-    https://console.cloud.google.com/apis/credentials/oauthclient/
-    423966986543-s24uli6j9cujm7feu4tb0t36cr1t573e.apps.googleusercontent.com?
-    project=oauthdemo-415600
-
-    <pre>
-        {{ targetInfo|json_encode(constant('JSON_UNESCAPED_SLASHES')+constant('JSON_PRETTY_PRINT')) }}
-        {{ query|json_encode(constant('JSON_UNESCAPED_SLASHES')+constant('JSON_PRETTY_PRINT')) }}
+<hr />
+    {% for service, data in services %}
+        <div>
+        <h3>{{ service }}</h3>
+        <a href="{{ data.service_apps_url }}" class="btn btn-primary" target="_blank">{{ service|title }} Apps</a>
+        {% if user %}
+            <div>{{ user.email }} Access Token: {{ attribute(user, service ~ 'Id') }}</div>
+        {% endif %}
+        {% if app.request.get('debug', false) %}
+        <pre>
+        {{ data.targetInfo|json_encode(constant('JSON_UNESCAPED_SLASHES')+constant('JSON_PRETTY_PRINT')) }}
+            {{ data.query|json_encode(constant('JSON_UNESCAPED_SLASHES')+constant('JSON_PRETTY_PRINT')) }}
     </pre>
-{#    {{ dump(targetInfo) }}#}
-{#    {{ dump(query) }}#}
+        {% endif %}
+        You <b>MUST</b> set the redirect URL
+
+        <div>
+        <div data-controller="clipboard" data-clipboard-success-content-value="Copied!">
+            <input type="text" value="{{ data.query.redirect_uri }}" data-clipboard-target="source" />
+
+            <button type="button" data-action="clipboard#copy" data-clipboard-target="button">Copy to clipboard</button>
+        </div>
+
+
+        <code></code>
+        </div>
+
+
+
+        {% if service == 'google' %}
+            {% set googleProjectUrl = 'https://console.cloud.google.com/apis/credentials/oauthclient/%s?project=%s'|
+                format(data.clientId, projectId) %}
+            <a href="{{ googleProjectUrl }}" target="_blank" class="btn btn-warning">
+                Google Project {{ projectId }}
+            </a>
+        {% endif %}
+    {% endfor %}
+
+        </div>
 {% endblock %}

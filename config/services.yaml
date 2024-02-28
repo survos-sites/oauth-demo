@@ -5,6 +5,7 @@
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
     google_project_id: '%env(OAUTH_GOOGLE_PROJECT_ID)%'
+    github_project_id: '%env(OAUTH_GITHUB_PROJECT_ID)%'
     router.request_context.scheme: 'https'
     asset.request_context.secure: true
 
