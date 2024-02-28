@@ -31,15 +31,24 @@
             {{ data.query|json_encode(constant('JSON_UNESCAPED_SLASHES')+constant('JSON_PRETTY_PRINT')) }}
     </pre>
         {% endif %}
-        You <b>MUST</b> set the redirect URL
-
+        You <b>MUST</b> set the redirect URLs
         <div>
-        <div data-controller="clipboard" data-clipboard-success-content-value="Copied!">
-            <input type="text" value="{{ data.query.redirect_uri }}" data-clipboard-target="source" />
+{#            {{ dump(data) }}#}
+{#        {% set currentRedirect = data.query.redirect_uri %}#}
+{#        {{ app.request.getSchemeAndHttpHost() }}#}
+{#        {{ app.request.getBaseURL() }}#}
+{#        {% set currentHost = app.request.getSchemeAndHttpHost() %}#}
+{#        {% set productionRedirectUrl = currentRedirect|replace({currentHost: productionUrl}) %}#}
+{#        {{ dump(currentRedirect, currentHost , productionUrl, productionRedirectUrl) }}#}
 
-            <button type="button" data-action="clipboard#copy" data-clipboard-target="button">Copy to clipboard</button>
-        </div>
+            {% for var in ['productionRedirectUri', 'redirectUri'] %}
+                {% set redirect = data[var] %}
+                <div data-controller="clipboard" data-clipboard-success-content-value="Copied!">
+                    <input type="text" class="col-8" value="{{ redirect }}" data-clipboard-target="source" />
+                    <button type="button" data-action="clipboard#copy" data-clipboard-target="button">Copy to clipboard</button>
+                </div>
 
+            {% endfor %}
 
         <code></code>
         </div>

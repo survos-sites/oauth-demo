@@ -6,6 +6,7 @@
 parameters:
     google_project_id: '%env(OAUTH_GOOGLE_PROJECT_ID)%'
     github_project_id: '%env(OAUTH_GITHUB_PROJECT_ID)%'
+    production_url: '%env(PRODUCTION_URL)%'
     router.request_context.scheme: 'https'
     asset.request_context.secure: true
 
