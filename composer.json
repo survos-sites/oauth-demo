@@ -1,6 +1,9 @@
 {
     "type": "project",
     "license": "proprietary",
+    "name": "survos-sites/oauth-demo",
+    "description": "A small application showing how to integrate oauth",
+    "keywords": ["symfony","oauth"],
     "prefer-stable": true,
     "require": {
         "php": ">=8.2",
