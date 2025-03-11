@@ -31,7 +31,7 @@ framework:
         -        104.16.0.0/13
         -        104.24.0.0/14
         -        172.64.0.0/13
-        -        131.0.72.0/22'
+        -        131.0.72.0/22
         # https://symfony.com/doc/current/deployment/proxies.html
     trusted_headers: ['forwarded', 'x-forwarded-for', 'x-forwarded-host', 'x-forwarded-proto', 'x-forwarded-port', 'x-forwarded-prefix']
     #esi: true
