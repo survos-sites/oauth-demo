@@ -13,10 +13,12 @@
         "doctrine/doctrine-bundle": "^2.11",
         "doctrine/doctrine-migrations-bundle": "^3.3",
         "doctrine/orm": "^2.18 || ^3.0",
+        "knpuniversity/oauth2-client-bundle": "^v2.18.1",
         "league/oauth2-github": "^3.1",
         "league/oauth2-google": "^4.0",
         "phpdocumentor/reflection-docblock": "^5.3",
         "phpstan/phpdoc-parser": "^1.25",
+        "survos/auth-bundle": "^1.5",
         "survos/deployment-bundle": "^1.5",
         "symfony/asset": "^6.4 || ^7.0",
         "symfony/asset-mapper": "^6.4 || ^7.0",
@@ -43,17 +45,17 @@
         "symfony/string": "^6.4 || ^7.0",
         "symfony/translation": "^6.4 || ^7.0",
         "symfony/twig-bundle": "^6.4 || ^7.0",
-        "symfony/ux-turbo": "^2.14",
         "symfony/validator": "^6.4 || ^7.0",
         "symfony/web-link": "^6.4 || ^7.0",
         "symfony/yaml": "^6.4 || ^7.0",
-        "knpuniversity/oauth2-client-bundle": "^v2.18.1",
         "twig/extra-bundle": "^2.12|^3.0",
         "twig/twig": "^2.12|^3.0"
     },
     "config": {
         "allow-plugins": {
+            "endroid/installer": true,
             "php-http/discovery": true,
+            "survos/installer": true,
             "symfony/flex": true,
             "symfony/runtime": true
         },

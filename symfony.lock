@@ -1,4 +1,16 @@
 {
+    "bizkit/versioning-bundle": {
+        "version": "1.2",
+        "recipe": {
+            "repo": "github.com/symfony/recipes-contrib",
+            "branch": "main",
+            "version": "1.0",
+            "ref": "ecb844d4e78c7e1834fb360fbb4d3846da02e581"
+        },
+        "files": [
+            "config/packages/bizkit_versioning.yaml"
+        ]
+    },
     "doctrine/doctrine-bundle": {
         "version": "2.11",
         "recipe": {
@@ -51,6 +63,9 @@
             "phpunit.xml.dist",
             "tests/bootstrap.php"
         ]
+    },
+    "survos/auth-bundle": {
+        "version": "1.5.384"
     },
     "survos/deployment-bundle": {
         "version": "1.5.158"
@@ -274,9 +289,6 @@
             "config/packages/twig.yaml",
             "templates/base.html.twig"
         ]
-    },
-    "symfony/ux-turbo": {
-        "version": "v2.14.2"
     },
     "symfony/validator": {
         "version": "7.0",
