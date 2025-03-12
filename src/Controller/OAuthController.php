@@ -65,27 +65,14 @@ class OAuthController extends AbstractController
         return $redirect;
         dd($client->getOAuth2Provider());
 
-// //        dd($client->getOAuth2Provider());
-//         $redirectUrl = $this->generateUrl('auth_oauth_check', ['service' => $service], UrlGeneratorInterface::ABSOLUTE_URL);
-//         $redirectUrl = str_replace('http://', 'https://', $redirectUrl);
-//         $redirect = $client
-//             ->redirect( self::SCOPES[$service], [
-//                 'redirect_uri' => $redirectUrl
-//             ] ) ;  // 'public_profile', 'email' ,  the scopes you want to access
-//         $targetUrl = $redirect->getTargetUrl();
-
-$redirectUrl = $this->generateUrl('auth_oauth_check', ['service' => $service], UrlGeneratorInterface::ABSOLUTE_URL);
-
-// Initiate the OAuth redirect with the desired scopes
-$redirect = $client->redirect(
-    self::SCOPES[$service],
-    [
-        'redirect_uri' => $redirectUrl
-    ]
-);
-
-// Get the final redirect target URL (used internally by the client)
-$targetUrl = $redirect->getTargetUrl();
+//        dd($client->getOAuth2Provider());
+        $redirectUrl = $this->generateUrl('auth_oauth_check', ['service' => $service], UrlGeneratorInterface::ABSOLUTE_URL);
+        $redirectUrl = str_replace('http://', 'https://', $redirectUrl);
+        $redirect = $client
+            ->redirect( self::SCOPES[$service], [
+                'redirect_uri' => $redirectUrl
+            ] ) ;  // 'public_profile', 'email' ,  the scopes you want to access
+        $targetUrl = $redirect->getTargetUrl();
 
         parse_str($queryString = parse_url($targetUrl, PHP_URL_QUERY), $queryParams);
         $redirectUrl = $queryParams['redirect_uri'];
